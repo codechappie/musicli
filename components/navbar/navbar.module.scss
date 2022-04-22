@@ -1,0 +1,23 @@
+.navbar {
+	background: #ffffff;
+	height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+	&_container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 96%;
+		max-width: 1400px;
+		margin: 0 auto;
+
+		nav {
+			a {
+				padding: 1rem;
+				margin: 0.5rem;
+			}
+		}
+	}
+}
