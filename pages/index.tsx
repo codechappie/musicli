@@ -65,28 +65,54 @@ const Index = () => {
 		}
 		if (charCode == 13) {
 			e.preventDefault();
+			let response = "";
 			const commandsArr = e.target.innerText.replace(/\s\s+/g, ' ').split(" ");
 
 			command = document.createElement('div');
 			command.setAttribute("class", "screen-terminal__container__line__response");
-			command.innerHTML = `
-			<div class="screen-terminal__container__line">
-				<span class='command-start'>
-					<div class="root">▲</div>
-					<div class="path">~ lidify</div>
-					<div class="type">♬ Music</div>
-				</span>
-				<div  class='input' spellcheck="false">${commandsArr.map((comm: string) => (
-				`<span class="${comm}">${comm}</span>`
-			)).join(" ")
-				}</div>
-			</div>
-			<div class='response' spellcheck="false">
-			</div>
-			`;
-			commands?.appendChild(command);
-			command.scrollIntoView();
-			e.target.innerText = "";
+
+			if (commands) {
+				commands?.appendChild(command);
+
+				let commandClean = commandsArr.join(" ");
+				if (commandsArr[0] === "musicli") {
+					if (commandsArr[1] === "--help") {
+						response = `
+						<h5>Comandos básicos</h5>
+						<div class="divider dashed"></div>
+					<code class='code consola-font'>
+						# <span class='main-command'>musicli</span> <pre>--help</pre>
+					</code>`;
+					} else if ("album") {
+						response = `<div class="asci-img small">
+							${asciImg}
+						</div>`
+					}
+
+
+					command.innerHTML = `<div class="screen-terminal__container__line">
+						<span class='command-start'>
+							<div class="root">▲</div>
+							<div class="path">~ lidify</div>
+							<div class="type">♬ Music</div>
+						</span>
+						<div class='input' spellcheck="false">${commandsArr.map((comm: string) => (
+						`<span class="${comm}">${comm}</span>`
+					)).join(" ")
+						}</div>
+					</div>
+					<div class='response' spellcheck="false">
+						${response}
+					</div>`;
+				}
+				if (commandClean === "clear" || commandClean === "cls") {
+					commands.innerHTML = "";
+				}
+
+				command.scrollIntoView();
+				e.target.innerText = "";
+			}
+
 		}
 	}
 
@@ -100,40 +126,35 @@ const Index = () => {
 				</div>
 				<label htmlFor='terminal-input' className="screen-terminal__container">
 					<div className="welcome__message">
-						<p>
-							Bienvenid@ a
-						</p>
-						<br />
-						<div className='welcome'>
-							██╗░░░░░██╗██████╗░██╗███████╗██╗░░░██╗
-							██║░░░░░██║██╔══██╗██║██╔════╝╚██╗░██╔╝
-							██║░░░░░██║██║░░██║██║█████╗░░░╚████╔╝░
-							██║░░░░░██║██║░░██║██║██╔══╝░░░░╚██╔╝░░
-							███████╗██║██████╔╝██║██║░░░░░░░░██║░░░
-							╚══════╝╚═╝╚═════╝░╚═╝╚═╝░░░░░░░░╚═╝░░░
+						<div className="start__message">
+
+							███╗░░░███╗██╗░░░██╗░██████╗██╗░█████╗░██╗░░░░░██╗
+							████╗░████║██║░░░██║██╔════╝██║██╔══██╗██║░░░░░██║
+							██╔████╔██║██║░░░██║╚█████╗░██║██║░░╚═╝██║░░░░░██║
+							██║╚██╔╝██║██║░░░██║░╚═══██╗██║██║░░██╗██║░░░░░██║
+							██║░╚═╝░██║╚██████╔╝██████╔╝██║╚█████╔╝███████╗██║
+							╚═╝░░░░░╚═╝░╚═════╝░╚═════╝░╚═╝░╚════╝░╚══════╝╚═╝
 						</div>
-						<br />
-						<p>
-							En este sitio puedes escuchar musica mientras trabajas, estudias o simplemente te relajas. Explora la gran variedad de generos que tenemos.
+						<div className="divider dashed"></div>
+						<p className='consola-font'>
+							Bienvenid@ a MusiCLI! En este sitio puedes escuchar música mientras trabajas, estudias o simplemente te relajas. Explora la gran variedad de generos que tenemos para ti.
 						</p>
-						<br />
-						<p>
-							Para que puedas disfrutar del contenido conoce como puedes interactuar con esta linea de comando como los siguientes comandos básicos:
+						<div className="divider dashed"></div>
+						<p className='consola-font'>
+							Para empezar a reproducir un genero o artista, escribe el siguiente comando en la consola <code className="command-line clickable">musicli play rock</code> o  <code className="command-line clickable">musicli play bob marley</code> y luego presiona enter y se reproducirá una playlist de música de ese genero o artista.
+							Si deseas ver todos los comandos disponibles, escribe <code className="command-line clickable">musicli --help</code>
 						</p>
-						<br />
-						<code className='code'>
-							<span className='main-command'>lidify</span> <pre>--help</pre>
-						</code>
-						<div className="welcome small">
-							{asciImg}
-						</div>
+
+						{/* <code className='code consola-font'>
+							# <span className='main-command'>musicli</span> <pre>--help</pre>
+						</code> */}
 					</div>
 					<div id="commands" className="commands"></div>
 					<div className="screen-terminal__container__line">
 						<span className='command-start'>
 							<div className="root">▲</div>
-							<div className="path">~ lidify</div>
-							<div className="type">♬ Music</div>
+							<div className="path">~  root</div>
+							<div className="type">♬ musicli</div>
 						</span>
 						<div contentEditable={true} className='input' id="terminal-input" onKeyDown={(e) => sendCommand(e)} spellCheck={false}></div>
 					</div>
