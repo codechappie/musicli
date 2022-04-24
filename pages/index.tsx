@@ -1,5 +1,5 @@
 import Page from '@/components/page'
-
+import { useState } from 'react'
 const Index = () => {
 	// img to text 
 	// https://github.com/victorqribeiro/imgToAscii
@@ -55,64 +55,53 @@ const Index = () => {
 	K000KKXXXXXXXXXXXXXXXXXKKKKKK00000000KKKKXXXXXXXXXXXXXXXXXXKKKKKKKKKKXXXXXXXXXXXXNNNNNNNNNNXXXKKKKKX
 	000000KXXXXXXXXXXXXXXXXXXKKKK00000000KKKXXXXXXXXXXXXXXXXXXKKK00000KKKKXXXXXXXXXXXNNNNNNNNXXXKKKKKKKK`
 	let command;
+	const [terminalText, setTerminalText] = useState("")
 	const sendCommand = (e: any) => {
+		e.preventDefault();
 		var commands = document.getElementById('commands');
-		var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
-		alert(charCode)
-		if (charCode == 32) {
-			console.log(e.target.innerText)
-			e.target.innertHTML = e.target.innerText
-		}
-		if (charCode == 13) {
-			e.preventDefault();
-			let response = "";
-			const commandsArr = e.target.innerText.replace(/\s\s+/g, ' ').split(" ");
+		let response = "";
+		const commandsArr = terminalText.replace(/\s\s+/g, ' ').split(" ");
 
-			command = document.createElement('div');
-			command.setAttribute("class", "screen-terminal__container__line__response");
-
-			if (commands) {
-				commands?.appendChild(command);
-
-				let commandClean = commandsArr.join(" ");
-				if (commandsArr[0] === "musicli") {
-					if (commandsArr[1] === "--help") {
-						response = `
+		command = document.createElement('div');
+		command.setAttribute("class", "screen-terminal__container__line__response");
+		console.log(commands)
+		if (commands) {
+			commands?.appendChild(command);
+			let commandClean = commandsArr.join(" ");
+			if (commandsArr[0] === "musicli") {
+				if (commandsArr[1] === "--help") {
+					response = `
 						<h5>Comandos básicos</h5>
 						<div class="divider dashed"></div>
 					<code class='code consola-font'>
 						# <span class='main-command'>musicli</span> <pre>--help</pre>
 					</code>`;
-					} else if ("album") {
-						response = `<div class="asci-img small">
+				} else if ("album") {
+					response = `<div class="asci-img small">
 							${asciImg}
 						</div>`
-					}
-
-
-					command.innerHTML = `<div class="screen-terminal__container__line">
-						<span class='command-start'>
-							<div class="root">▲</div>
-							<div class="path">~ lidify</div>
-							<div class="type">♬ Music</div>
-						</span>
-						<div class='input' spellcheck="false">${commandsArr.map((comm: string) => (
-						`<span class="${comm}">${comm}</span>`
-					)).join(" ")
-						}</div>
-					</div>
-					<div class='response' spellcheck="false">
-						${response}
-					</div>`;
-				}
-				if (commandClean === "clear" || commandClean === "cls") {
-					commands.innerHTML = "";
 				}
 
-				command.scrollIntoView();
-				e.target.innerText = "";
 			}
-
+			if (commandClean === "clear" || commandClean === "cls") {
+				commands.innerHTML = "";
+			}
+			command.innerHTML = `<div class="screen-terminal__container__line">
+			<span class='command-start'>
+				<div class="root">▲</div>
+				<div class="path">~ musicli</div>
+				<div class="type">♬ Music</div>
+			</span>
+			<div class='input' spellcheck="false">${commandsArr.map((comm: string) => (
+				`<span class="${comm}">${comm}</span>`
+			)).join(" ")
+				}</div>
+		</div>
+		<div class='response' spellcheck="false">
+			${response}
+		</div>`;
+			command.scrollIntoView();
+			setTerminalText("");
 		}
 	}
 
@@ -124,7 +113,7 @@ const Index = () => {
 					<div className="action-btn minify"></div>
 					<div className="action-btn expand"></div>
 				</div>
-				<label htmlFor='terminal-input' className="screen-terminal__container">
+				<form onSubmit={(e) => sendCommand(e)} className="screen-terminal__container">
 					<div className="welcome__message">
 						<div className="start__message">
 
@@ -153,12 +142,12 @@ const Index = () => {
 					<div className="screen-terminal__container__line">
 						<span className='command-start'>
 							<div className="root">▲</div>
-							<div className="path">~  root</div>
-							<div className="type">♬ musicli</div>
+							<div className="path">~  musicli</div>
+							<div className="type">♬ music</div>
 						</span>
-						<input className='input' id="terminal-input" inputMode="text" onKeyDown={(e) => sendCommand(e)} spellCheck={false}></input>
+						<input className='input' id="terminal-input" inputMode="text" value={terminalText} onChange={(e) => setTerminalText(e.target.value)} spellCheck={false}></input>
 					</div>
-				</label>
+				</form>
 				<div className="screen-terminal__footer">
 					footer content
 				</div>
