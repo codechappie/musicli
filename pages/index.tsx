@@ -156,7 +156,7 @@ const Index = () => {
 							<div className="path">~  root</div>
 							<div className="type">♬ musicli</div>
 						</span>
-						<div contentEditable={true} className='input' id="terminal-input" onKeyDown={(e) => sendCommand(e)} spellCheck={false}></div>
+						<input className='input' id="terminal-input" inputMode="text" onKeyDown={(e) => sendCommand(e)} spellCheck={false}></input>
 					</div>
 				</label>
 				<div className="screen-terminal__footer">
