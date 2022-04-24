@@ -58,7 +58,7 @@ const Index = () => {
 	const sendCommand = (e: any) => {
 		var commands = document.getElementById('commands');
 		var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
-		console.log(charCode)
+		alert(charCode)
 		if (charCode == 32) {
 			console.log(e.target.innerText)
 			e.target.innertHTML = e.target.innerText
