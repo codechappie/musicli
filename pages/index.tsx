@@ -58,7 +58,6 @@ const Index = () => {
 	const sendCommand = (e: any) => {
 		console.log(e.target)
 		var commands = document.getElementById('commands');
-		alert(e.which , e.keyCode, e.code)
 		var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
 		if (charCode == 32) {
 			e.target.innertHTML = e.target.value
@@ -156,7 +155,7 @@ const Index = () => {
 							<div className="path">~  musicli</div>
 							<div className="type">♬ music</div>
 						</span>
-						<input className='input' id="terminal-input" inputMode="text" onKeyDown={(e) => sendCommand(e)} spellCheck={false}></input>
+						<input className='input' id="terminal-input" inputMode="url" onKeyDown={(e) => sendCommand(e)} spellCheck={false}></input>
 					</div>
 				</label>
 				<div className="screen-terminal__footer">
