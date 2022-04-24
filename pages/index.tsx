@@ -58,11 +58,12 @@ const Index = () => {
 	const sendCommand = (e: any) => {
 		console.log(e.target)
 		var commands = document.getElementById('commands');
+		alert(e.which , e.keyCode, e.code)
 		var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
 		if (charCode == 32) {
 			e.target.innertHTML = e.target.value
 		}
-		if (charCode == 13) {
+		if (charCode == 13 || e.code == 'Enter') {
 			e.preventDefault();
 			let response = "";
 			const commandsArr = e.target.value.replace(/\s\s+/g, ' ').split(" ");
