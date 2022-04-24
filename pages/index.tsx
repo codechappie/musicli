@@ -145,7 +145,7 @@ const Index = () => {
 							<div className="path">~  musicli</div>
 							<div className="type">♬ music</div>
 						</span>
-						<input className='input' id="terminal-input" inputMode="text" value={terminalText} onChange={(e) => setTerminalText(e.target.value)} spellCheck={false}></input>
+						<input className='input' type="submit" id="terminal-input" inputMode="text" value={terminalText} onChange={(e) => setTerminalText(e.target.value)} spellCheck={false}></input>
 					</div>
 				</form>
 				<div className="screen-terminal__footer">
