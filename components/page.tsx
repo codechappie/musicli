@@ -9,11 +9,11 @@ const Page = ({ title, children }: Props) => (
 	<>
 		{title ? (
 			<Head>
-				<title>Lidify | {title}</title>
+				<title>MusiCLI | {title}</title>
 			</Head>
 		) : null}
 
-		<main id="lidify-app">
+		<main id="musicli-app">
 			{children}
 		</main>
 	</>

@@ -1,9 +1,41 @@
 import Page from '@/components/page'
+import axios from 'axios'
 import { useState } from 'react'
+
+
+const newComands: any = {
+	'help': "musicli --help",
+	'play-rock': "musicli play rock",
+	'play-bob-marley': "musicli play bob marley",
+	"empty": "empty",
+}
+
 const Index = () => {
-	// img to text 
-	// https://github.com/victorqribeiro/imgToAscii
-	// https://raw.githubusercontent.com/ahmadawais/Shades-of-Purple-Hyper/master/images/Shades-of-Purple-Hyper.gif
+	const [embedId, setembedId] = useState("")
+
+	const searchYoutubeMusicOrPlaylist = async (query: string) => {
+		const secretKey = process.env.NEXT_PUBLIC_YOUTUBE_KEY;
+		let data = await axios.get(`https://www.googleapis.com/youtube/v3/search?key=AIzaSyDGhgeo4J1MeIT2T3f0kxzQH5JMobecjMY&part=snippet,id&order=date&maxResults=6&type=video&videoEmbeddable=true&videoLicense=youtube&videoSyndicated=true&liveBroadcastContent=none&q=${query}`);
+		console.log(data)
+		// liveBroadcastContent: "none"
+		let musicId = data.data.items.find((video: any) => {
+			if(video.snippet.liveBroadcastContent !== "upcoming") {
+				return video
+			}
+		});
+		console.log("MI", musicId)
+		let musicData = musicId.snippet;
+		musicId = musicId.id.videoId;
+		let musicPlayer: any = document.getElementById("hidden-player");
+		if (musicPlayer) {
+			musicPlayer.innerHTML = musicId ? `
+					<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${musicId}?autoplay=1&mute=0&loop=1" frameborder="0" allow="autoplay" encrypted-media allowfullscreen></iframe>
+					`: "";
+		}
+		return musicData;
+	}
+
+	// https://github.com/victorqribeiro/imgToAscii - https://raw.githubusercontent.com/ahmadawais/Shades-of-Purple-Hyper/master/images/Shades-of-Purple-Hyper.gif
 	let asciImg = `NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXXKKK00OOOOOOOOOOOOO00KXXXXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
 	NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXXK0OkkkkxdddxkkkkxxxxxxxxxxkO0KXXXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
 	NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXK0kkkkkxkkkkxkOO0KKKKK000OO0Oxddxk0KXXNNNNNNNNNNNNNKkkkkkkkkkkkkx0NNN
@@ -55,65 +87,93 @@ const Index = () => {
 	K000KKXXXXXXXXXXXXXXXXXKKKKKK00000000KKKKXXXXXXXXXXXXXXXXXXKKKKKKKKKKXXXXXXXXXXXXNNNNNNNNNNXXXKKKKKX
 	000000KXXXXXXXXXXXXXXXXXXKKKK00000000KKKXXXXXXXXXXXXXXXXXXKKK00000KKKKXXXXXXXXXXXNNNNNNNNXXXKKKKKKKK`
 	let command;
+
+	const setCommand = (newCommand: any) => {
+
+
+		const inputTerminal: any = document.getElementById("terminal-input");
+		console.log("new command: " + newCommand);
+		if (inputTerminal) {
+			inputTerminal.value = newComands[newCommand];
+
+		}
+
+	}
+
 	const sendCommand = (e: any) => {
-		console.log(e.target)
-		var commands = document.getElementById('commands');
 		var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
 		if (charCode == 32) {
 			e.target.innertHTML = e.target.value
 		}
 		if (charCode == 13 || e.code == 'Enter') {
 			e.preventDefault();
-			let response = "";
-			const commandsArr = e.target.value.replace(/\s\s+/g, ' ').split(" ");
-
-
-			if (commands) {
-				command = document.createElement('div');
-				command.setAttribute("class", "screen-terminal__container__line__response");
-				commands?.appendChild(command);
-				let commandClean = commandsArr.join(" ");
-				if (commandsArr[0] === "musicli") {
-					if (commandsArr[1] === "--help") {
-						console.log("enter")
-						response = `
-						<h5>Comandos básicos</h5>
-						<div class="divider dashed"></div>
-					<code class='code consola-font'>
-						# <span class='main-command'>musicli</span> <pre>--help</pre>
-					</code>`;
-					} else if ("album") {
-						response = `<div class="asci-img small">
-							${asciImg}
-						</div>`
-					}
-
-
-				}
-				if (commandClean === "clear" || commandClean === "cls") {
-					commands.innerHTML = "";
-				}
-				command.innerHTML = `<div class="screen-terminal__container__line">
-					<span class='command-start'>
-						<div class="root">▲</div>
-						<div class="path">~ lidify</div>
-						<div class="type">♬ Music</div>
-					</span>
-					<div class='input' spellcheck="false">${commandsArr.map((comm: string) => (
-					`<span class="${comm}">${comm}</span>`
-				)).join(" ")
-					}</div>
-				</div>
-				<div class='response' spellcheck="false">
-					${response}
-				</div>`;
-				command.scrollIntoView();
-				e.target.value = "";
-			}
-
+			executeCommand(e);
 		}
 	}
 
+
+	const executeCommand = async (e: any) => {
+		const inputTerminal: any = document.getElementById("terminal-input");
+		const commands = document.getElementById('commands');
+		const commandsArr = e.target.value.replace(/\s\s+/g, ' ').split(" ");
+		let response = "";
+		if (commands) {
+			command = document.createElement('div');
+			command.setAttribute("class", "screen-terminal__container__line__response");
+			commands?.appendChild(command);
+			let commandClean = commandsArr.join(" ");
+			if (commandsArr[0] === "musicli") {
+				if (commandsArr[1] === "--help") {
+					console.log("enter")
+					response = `
+					<h5>Comandos básicos</h5>
+					<div class="divider dashed"></div>
+				<code class='code consola-font'>
+					# <span class='main-command'>musicli</span> <pre>--help</pre>
+				</code>`;
+				} else if (commandsArr[1] === "play") {
+					if (commandsArr[2] === "") return;
+					const clonArr = [...commandsArr];
+					clonArr.shift();
+					clonArr.shift();
+					console.log("QUERY",);
+					await searchYoutubeMusicOrPlaylist(clonArr.join(" ")).then(data => {
+						console.log(data.title)
+						response =  `
+						<small>Reproduciendo:</small>
+						<h4>${data.title}</h4>
+						`;
+					});
+					
+				} else if ("album") {
+					response = `<div class="asci-img small">
+						${asciImg}
+					</div>`
+				}
+
+
+			}
+			if (commandClean === "clear" || commandClean === "cls") {
+				commands.innerHTML = "";
+			}
+			command.innerHTML = `<div class="screen-terminal__container__line">
+				<span class='command-start'>
+					<div class="root">▲</div>
+					<div class="path">~ lidify</div>
+					<div class="type">♬ Music</div>
+				</span>
+				<div class='input' spellcheck="false">${commandsArr.map((comm: string) => (
+				`<span class="${comm}">${comm}</span>`
+			)).join(" ")
+				}</div>
+			</div>
+			<div class='response' spellcheck="false">
+				${response}
+			</div>`;
+			inputTerminal.scrollIntoView();
+			inputTerminal.value = "";
+		}
+	}
 
 	return (
 		<Page title="Una terminal con música para desarrolladores 📻">
@@ -126,13 +186,12 @@ const Index = () => {
 				<label className="screen-terminal__container">
 					<div className="welcome__message">
 						<div className="start__message">
-
-							███╗░░░███╗██╗░░░██╗░██████╗██╗░█████╗░██╗░░░░░██╗
-							████╗░████║██║░░░██║██╔════╝██║██╔══██╗██║░░░░░██║
-							██╔████╔██║██║░░░██║╚█████╗░██║██║░░╚═╝██║░░░░░██║
-							██║╚██╔╝██║██║░░░██║░╚═══██╗██║██║░░██╗██║░░░░░██║
-							██║░╚═╝░██║╚██████╔╝██████╔╝██║╚█████╔╝███████╗██║
-							╚═╝░░░░░╚═╝░╚═════╝░╚═════╝░╚═╝░╚════╝░╚══════╝╚═╝
+							░██████╗██╗███╗░░░███╗██████╗░██╗░░░░░███████╗░█████╗░███╗░░░███╗██████╗░
+							██╔════╝██║████╗░████║██╔══██╗██║░░░░░██╔════╝██╔══██╗████╗░████║██╔══██╗
+							╚█████╗░██║██╔████╔██║██████╔╝██║░░░░░█████╗░░██║░░╚═╝██╔████╔██║██║░░██║
+							░╚═══██╗██║██║╚██╔╝██║██╔═══╝░██║░░░░░██╔══╝░░██║░░██╗██║╚██╔╝██║██║░░██║
+							██████╔╝██║██║░╚═╝░██║██║░░░░░███████╗███████╗╚█████╔╝██║░╚═╝░██║██████╔╝
+							╚═════╝░╚═╝╚═╝░░░░░╚═╝╚═╝░░░░░╚══════╝╚══════╝░╚════╝░╚═╝░░░░░╚═╝╚═════╝░
 						</div>
 						<div className="divider dashed"></div>
 						<p className='consola-font'>
@@ -140,10 +199,13 @@ const Index = () => {
 						</p>
 						<div className="divider dashed"></div>
 						<p className='consola-font'>
-							Para empezar a reproducir un genero o artista, escribe el siguiente comando en la consola <code className="command-line clickable">musicli play rock</code> o  <code className="command-line clickable">musicli play bob marley</code> y luego presiona enter y se reproducirá una playlist de música de ese genero o artista.
-							Si deseas ver todos los comandos disponibles, escribe <code className="command-line clickable">musicli --help</code>
+							Para empezar a reproducir un genero o artista, escribe el siguiente comando en la consola <code className="command-line clickable" onClick={() => setCommand("play-rock")}>musicli play rock</code> o  <code className="command-line clickable" onClick={() => setCommand("play-bob-marley")}>musicli play bob marley</code> y luego presiona enter y se reproducirá una playlist de música de ese genero o artista.
+							Si deseas ver todos los comandos disponibles, escribe <code className="command-line clickable" onClick={() => setCommand("help")}>musicli --help</code>
 						</p>
-
+						<div className="divider small"></div>
+						<p className="consola-font">
+							¡MusiCLI.com (* v0.0.1, codename: beta) desplegada & lista para usar!
+						</p>
 						{/* <code className='code consola-font'>
 							# <span className='main-command'>musicli</span> <pre>--help</pre>
 						</code> */}
@@ -161,6 +223,7 @@ const Index = () => {
 				<div className="screen-terminal__footer">
 					footer content
 				</div>
+				<div id="hidden-player" className='hidden-music-player'></div>
 			</section>
 		</Page>
 	)

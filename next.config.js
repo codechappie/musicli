@@ -6,4 +6,7 @@ module.exports = withPWA({
 		dest: 'public',
 		runtimeCaching,
 	},
+	env: {
+		NEXT_PUBLIC_YOUTUBE_KEY: process.env.NEXT_PUBLIC_YOUTUBE_KEY,
+	}
 })
