@@ -5,18 +5,21 @@ interface Props {
 	children: React.ReactNode
 }
 
-const Page = ({ title, children }: Props) => (
-	<>
-		{title ? (
-			<Head>
-				<title>MusiCLI | {title}</title>
-			</Head>
-		) : null}
+const Page = ({ title, children }: Props) => {
+	
+	return (
+		<>
+			{title ? (
+				<Head>
+					<title>SimpleCMD | {title}</title>
+				</Head>
+			) : null}
 
-		<main id="musicli-app">
-			{children}
-		</main>
-	</>
-)
+			<main id="main-app">
+				{children}
+			</main>
+		</>
+	)
+}
 
 export default Page
