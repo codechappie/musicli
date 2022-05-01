@@ -1,9 +1,13 @@
 import axios from 'axios';
+import Head from 'next/head';
 import React, { useState } from 'react'
+import { responseTerminal, terminalPlayer } from '../response-terminal/ResponseTerminal';
 import { textList } from '../text-list/textList';
 
 const TerminalInput = () => {
-
+    const localArray: String[] = [];
+    const [pageTitle, setPageTitle] = useState("")
+    const [localCommands, setLocalCommands] = useState<any>([]);
     const audioArr = [
         {
             id: "Spirit Blossom RomanBelov",
@@ -54,6 +58,7 @@ const TerminalInput = () => {
     let command;
     const sendCommand = (e: any) => {
         var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
+        console.log(charCode)
         if (charCode == 32) {
             e.target.innertHTML = e.target.value
         }
@@ -61,11 +66,22 @@ const TerminalInput = () => {
             e.preventDefault();
             executeCommand(e);
         }
+        if (charCode == 38) {
+            console.log(localStorage.getItem('localCommands'));
+        }
+        if (charCode == 40) {
+            console.log(localStorage.getItem('localCommands'));
+        }
     }
 
     const executeCommand = async (e: any) => {
         const inputTerminal: any = document.getElementById("terminal-input");
         const commands = document.getElementById('commands');
+
+        localArray.push(e.target.value);
+        if(localArray.length !== 0){
+            localStorage.setItem('localCommands', JSON.stringify(localArray));
+        }
         const commandsArr = e.target.value.replace(/\s\s+/g, ' ').split(" ");
         let response = "";
         if (commands) {
@@ -97,8 +113,9 @@ const TerminalInput = () => {
                     });
 
                 } else if (commandsArr[1] === "fm") {
+                    const audio: any = document.getElementById("radio-player") as HTMLAudioElement;
+
                     if (commandsArr[2] === "start") {
-                        const audio: any = document.getElementById("radio-player") as HTMLAudioElement;
                         const randomAudio = Math.floor(Math.random() * audioArr.length);
                         const selectedAudio: any = audioArr.find((el, index) => index === randomAudio);
                         audio.src = selectedAudio.audio;
@@ -106,11 +123,8 @@ const TerminalInput = () => {
                         audio.play();
 
                         let playerDetails = document.getElementById("player-details") as HTMLDivElement;
-                        playerDetails.innerHTML = `
-                        <small>Reproduciendo:</small>
-                        <h2>${selectedAudio.title}</h2>
-                        <h4>${selectedAudio.author}</h2>`;
-
+                        playerDetails.innerHTML = terminalPlayer(selectedAudio);
+                        setPageTitle(selectedAudio.title);
                         audio.addEventListener("ended", function () {
                             let lastId = audio["data-last"];
                             if (lastId === 2) {
@@ -122,11 +136,22 @@ const TerminalInput = () => {
                             audio.src = selectedAudio.audio;
                             audio["data-last"] = lastId;
                             audio.play();
-
-                            playerDetails.innerHTML = `<small>Reproduciendo:</small>
-                        <h2>${selectedAudio.title}</h4>
-                        <h4>${selectedAudio.author}</h4>`;
+                            playerDetails.innerHTML = terminalPlayer(selectedAudio);
+                            setPageTitle(selectedAudio.title);
                         });
+                    } else if (commandsArr[2] === "volume") {
+                        if ((!isNaN(parseFloat(commandsArr[3])))) {
+                            let volume = parseFloat(commandsArr[3]);
+                            if (volume <= 1) {
+                                audio.volume = parseFloat(commandsArr[3]);
+                                response = `<small>Volumen actual: ${commandsArr[3]} en el rango de [0-1]</small>`;
+                            } else response = `<small>Ingresa un volumen en el rango de [0-1]</small>`;
+                        } else {
+                            if (commandsArr[3] === "up") return audio.volume += 0.2;
+                            if (commandsArr[3] === "down") return audio.volume -= 0.2;
+                            response = `<small>Valor incorrecto. Ingresa un volumen en el rango de [0-1]</small>`;
+                        }
+
                     }
                 } else if ("album") {
                     response = `<div class="asci-img small">
@@ -139,20 +164,7 @@ const TerminalInput = () => {
             if (commandClean === "clear" || commandClean === "cls") {
                 commands.innerHTML = "";
             }
-            command.innerHTML = `<div class="screen-terminal__container__line">
-            <span class='command-start'>
-                <div class="root">▲</div>
-                <div class="path">~ lidify</div>
-                <div class="type">♬ Music</div>
-            </span>
-            <div class='input' spellcheck="false">${commandsArr.map((comm: string) => (
-                `<span class="${comm}">${comm}</span>`
-            )).join(" ")
-                }</div>
-        </div>
-        <div class='response' spellcheck="false">
-            ${response}
-        </div>`;
+            command.innerHTML = responseTerminal(commandsArr, response);
             inputTerminal.scrollIntoView();
             inputTerminal.value = "";
         }
@@ -179,10 +191,13 @@ const TerminalInput = () => {
     }
     return (
         <div className="screen-terminal__container__line">
+            <Head>
+                <title>SimpleCLI {pageTitle ? `| ${pageTitle}` : ''}</title>
+            </Head>
             <span className='command-start'>
                 <div className="root">▲</div>
-                <div className="path">~  musicli</div>
-                <div className="type">♬ music</div>
+                <div className="path">~  cli</div>
+                {/* <div className="type">♬ music</div> */}
             </span>
             <input className='input' id="terminal-input" inputMode="url" autoCorrect='off' autoComplete='off' onKeyDown={(e) => sendCommand(e)} spellCheck={false}></input>
         </div>

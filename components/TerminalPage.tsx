@@ -7,7 +7,7 @@ interface Props {
 }
 
 const TerminalPage = ({ title, children }: Props) => {
-	
+
 	return (
 		<>
 			{title ? (
@@ -27,10 +27,15 @@ const TerminalPage = ({ title, children }: Props) => {
 						{children}
 						<div id="commands" className="commands"></div>
 						<TerminalInput />
+						<div id='player-details' className='radio__player'></div>
 					</label>
 					<div className="screen-terminal__footer">
 						footer content
 					</div>
+					<audio id="radio-player" className='hidden' controls>
+						<source src="" type="audio/mpeg" />
+						Your browser does not support the audio tag.
+					</audio>
 					<div id="hidden-player" className='hidden-music-player'></div>
 				</section>
 			</main>
