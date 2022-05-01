@@ -28,6 +28,18 @@ const TerminalPage = ({ title, children }: Props) => {
 						<div id="commands" className="commands"></div>
 						<TerminalInput />
 						<div id='player-details' className='radio__player'></div>
+						<div id="bars" className='silence'>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+							<div className='bar'></div>
+						</div>
 					</label>
 					<div className="screen-terminal__footer">
 						footer content
@@ -37,6 +49,7 @@ const TerminalPage = ({ title, children }: Props) => {
 						Your browser does not support the audio tag.
 					</audio>
 					<div id="hidden-player" className='hidden-music-player'></div>
+					<div className="terminal__background"></div>
 				</section>
 			</main>
 		</>

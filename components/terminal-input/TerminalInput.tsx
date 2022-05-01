@@ -1,10 +1,17 @@
 import axios from 'axios';
 import Head from 'next/head';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { responseTerminal, terminalPlayer } from '../response-terminal/ResponseTerminal';
 import { textList } from '../text-list/textList';
 
 const TerminalInput = () => {
+
+    useEffect(() => {
+        const terminalInput: any = document.getElementById('terminal-input');
+        terminalInput.focus();
+    }, [])
+    
+
     const localArray: String[] = [];
     const [pageTitle, setPageTitle] = useState("")
     const [localCommands, setLocalCommands] = useState<any>([]);
@@ -114,8 +121,9 @@ const TerminalInput = () => {
 
                 } else if (commandsArr[1] === "fm") {
                     const audio: any = document.getElementById("radio-player") as HTMLAudioElement;
-
+                    const bars: any = document.getElementById("bars") as HTMLDivElement;
                     if (commandsArr[2] === "start") {
+                        bars.classList.remove("silence");
                         const randomAudio = Math.floor(Math.random() * audioArr.length);
                         const selectedAudio: any = audioArr.find((el, index) => index === randomAudio);
                         audio.src = selectedAudio.audio;
@@ -126,6 +134,7 @@ const TerminalInput = () => {
                         playerDetails.innerHTML = terminalPlayer(selectedAudio);
                         setPageTitle(selectedAudio.title);
                         audio.addEventListener("ended", function () {
+                            bars.classList.add("silence");
                             let lastId = audio["data-last"];
                             if (lastId === 2) {
                                 lastId = 0;
@@ -136,6 +145,7 @@ const TerminalInput = () => {
                             audio.src = selectedAudio.audio;
                             audio["data-last"] = lastId;
                             audio.play();
+                            bars.classList.remove("silence");
                             playerDetails.innerHTML = terminalPlayer(selectedAudio);
                             setPageTitle(selectedAudio.title);
                         });
